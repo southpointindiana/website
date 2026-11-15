@@ -1,7 +1,7 @@
 # South Point Church website
 
 Source for <https://www.southpointindiana.org>: a fast, static site built with
-[Astro](https://astro.build) and hosted free on Cloudflare Pages.
+[Astro](https://astro.build) and hosted free on Cloudflare Workers.
 
 > **Status: design sketch.** This is a first draft of the redesign. The live
 > site is still the Google Sites version until the domain is pointed here.
@@ -44,23 +44,26 @@ AGENTS.md first."* Then ask in plain language, for example:
 | Colors, fonts, spacing                       | top of `src/styles/global.css`     |
 | Photos and logo                              | `src/assets/`                      |
 
-## Publishing (Cloudflare Pages)
+## Publishing (Cloudflare Workers)
 
-One-time setup:
+The site is published by Cloudflare as a **Worker** named `southpointwebsite`
+that serves static files. It is connected to this GitHub repository.
 
-1. Push this repository to GitHub.
-2. In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to Git**
-   and pick the repository.
-3. Build settings: framework preset **Astro**, build command `npm run build`,
-   output directory `dist`. Node version comes from `.nvmrc` (22).
-4. When you're ready to go live, add `www.southpointindiana.org` under
-   **Custom domains** and follow the DNS instructions.
+- Current address: <https://southpointwebsite.frosty-bonus-ddf3.workers.dev>
+- Every push to the `main` branch publishes the site in about a minute.
+- The bottom of every page shows "Updated <time> · <commit>", so you can tell
+  which version is live.
 
-After that:
+Cloudflare build settings (dashboard → **Workers & Pages** → `southpointwebsite`
+→ **Settings → Build**):
 
-- Every push to `main` publishes the live site in about a minute.
-- Every other branch or pull request gets its own **preview link**
-  (`<branch>.<project>.pages.dev`) to share for review before it goes live.
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy` (keep this; it is what publishes the site)
 
-`public/_redirects` keeps the old Google Sites addresses (`/home`,
-`/about-us_1`) working.
+`wrangler.jsonc` tells Cloudflare where the built site is and to show our own
+"page not found" page. `public/_redirects` keeps the old Google Sites addresses
+(`/home`, `/about-us_1`) working.
+
+**Going live on the real domain:** in the Worker's **Settings → Domains &
+Routes**, add `www.southpointindiana.org` as a custom domain and follow the DNS
+instructions. Until then the domain still shows the Google Sites version.

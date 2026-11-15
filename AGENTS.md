@@ -8,7 +8,8 @@ Humans: see `README.md`.
 
 The public website for **South Point Church** (New Albany, Indiana),
 <https://www.southpointindiana.org>. It is a small static site built with
-[Astro](https://astro.build) and hosted on Cloudflare Pages. There is no
+[Astro](https://astro.build) and hosted on Cloudflare Workers as static files
+(see Deployment below). There is no
 backend, database, or CMS: every page is generated from the files in this repo.
 
 The people asking you for changes are often church staff and volunteers, not
@@ -46,10 +47,13 @@ src/
     404.astro               not-found page
   layouts/Base.astro      ← <head>, header, footer, fonts — wraps every page
   components/             ← Header, Footer, PageHero, Mission, Sermons
-  data/build.ts           ← commit hash + time shown faintly in the footer (from git)
+  data/build.ts           ← "Updated <time> · <commit>" values for the footer
   styles/global.css       ← design tokens (colors, type, spacing) + shared classes
   assets/                 ← images processed by Astro (logo, icons, photos)
 public/                   ← files copied as-is (favicon, _redirects, robots.txt)
+astro.config.mjs          ← Astro settings; passes build info to the footer
+build-info.mjs            ← reads the commit hash + time at build (Node only)
+wrangler.jsonc            ← Cloudflare Workers settings (Worker name, dist/ folder, 404 handling)
 ```
 
 ## How to make common changes
@@ -128,8 +132,26 @@ used on the home and About pages).
 
 ## Deployment
 
-Pushing to the `main` branch publishes the live site via Cloudflare Pages
-(build command `npm run build`, output directory `dist`). Every other branch
-and pull request gets its own preview URL from Cloudflare. Prefer working on a
-branch and letting the user review the preview link before merging to `main`.
-Do not commit `dist/` or `node_modules/`.
+The site is hosted on **Cloudflare Workers** as static files (not Cloudflare
+Pages), in a Worker named `southpointwebsite`.
+
+- Current address: <https://southpointwebsite.frosty-bonus-ddf3.workers.dev>
+  (the `www.southpointindiana.org` domain still points at the old Google Sites
+  version until it is moved over).
+- Cloudflare is connected to the GitHub repo. On every push to `main` it runs
+  `npm run build`, then `npx wrangler deploy`, which uploads `dist/` as
+  described in `wrangler.jsonc`. It takes about a minute.
+- The footer shows "Updated <time> · <commit>" so you can confirm which
+  version is live. Those values are computed in `build-info.mjs`, which runs
+  in Node from `astro.config.mjs`. Do not read git, environment variables, or
+  the current time inside pages or components; on Cloudflare that code can run
+  where none of those are available.
+- `public/_redirects` and the 404 page are handled by Cloudflare's static
+  asset serving. Keep `wrangler.jsonc`'s `name` matching the Worker's name.
+- Preview links for other branches exist only if non-production branch builds
+  are enabled in the Worker's build settings; ask the user before relying on one.
+
+Prefer working on a branch and letting the user review before merging to
+`main`, since `main` is what gets published. Do not commit `dist/` or
+`node_modules/`, and never run `wrangler deploy` yourself — deployment happens
+through Cloudflare when `main` is pushed.
