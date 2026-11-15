@@ -1,0 +1,10 @@
+---
+// Renders a sentence with the words "grow", "serve" and "go" highlighted.
+//   <Mission text={site.mission} />
+interface Props {
+  text: string;
+}
+const parts = Astro.props.text.split(/\b(grow|serve|go)\b/i);
+---
+
+{parts.map((part) => (/^(grow|serve|go)$/i.test(part) ? <span class="gsg">{part}</span> : part))}

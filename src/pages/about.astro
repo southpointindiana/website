@@ -1,0 +1,304 @@
+---
+// ABOUT PAGE  →  /about
+// Sections: Who we are · Mission & vision · Gatherings · Sermons · Leadership.
+// Gathering times, leaders, and affiliations come from src/data/site.ts.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Mission from '../components/Mission.astro';
+import { affiliations, gatherings, leaders, site } from '../data/site';
+
+// Finds each leader's photo by file name in src/assets/leaders/.
+const photos = import.meta.glob<{ default: ImageMetadata }>('../assets/leaders/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+});
+const photoFor = (slug: string) =>
+  Object.entries(photos).find(([path]) => path.includes(`/${slug}.`))?.[1].default;
+---
+
+<Base title="About" description="Who we are, what we believe, when we gather, and who leads South Point Church.">
+  <PageHero eyebrow="About us" title="Christ at the center of everything.">
+    An elder-led, congregational Baptist church in {site.location}.
+  </PageHero>
+
+  <!-- ── Who we are ───────────────────────────────────────────────────── -->
+  <section class="section" id="who-we-are">
+    <div class="wrap who">
+      <div class="prose reveal">
+        <p class="eyebrow">Who we are</p>
+        <p class="lead">
+          Jesus Christ is the eternal Son of God who also became fully human, to save His people and become a faithful
+          and merciful eternal high priest for us.
+        </p>
+        <p>
+          He is the resurrected and reigning King for whom we exist to worship, obey, glorify, and proclaim. He is
+          actively building His church by transferring one soul at a time from the domain of darkness into His
+          Kingdom, by the power of His Spirit, through faith in Him.
+        </p>
+        <p>
+          He is therefore the Head of the church, and everything we do is placed in submission to Him. He is the focal
+          point of Scripture, He is the focal point of our preaching and teaching, and He is the focal point of our
+          worship.
+        </p>
+      </div>
+
+      <aside class="facts card reveal">
+        <dl>
+          <div>
+            <dt>Our church</dt>
+            <dd>Elder-led, congregational Baptist</dd>
+          </div>
+          <div>
+            <dt>What we believe</dt>
+            <dd>
+              We affirm the <a href={site.links.beliefs} target="_blank" rel="noopener">Baptist Faith and Message 2000</a>
+            </dd>
+          </div>
+          <div>
+            <dt>Our story</dt>
+            <dd>Formed in 2020 through the merger of two local Baptist churches</dd>
+          </div>
+          <div>
+            <dt>Affiliations</dt>
+            <dd>
+              <span class="muted">Some of the ministries we support or align ourselves with:</span>
+              <ul class="chips">
+                {affiliations.map((a) => <li class="chip">{a}</li>)}
+              </ul>
+            </dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ── Mission & vision ─────────────────────────────────────────────── -->
+  <section class="section tint">
+    <div class="wrap grid-auto" style="--min: 20rem">
+      <article class="mv reveal">
+        <p class="eyebrow">Our mission</p>
+        <p class="statement"><Mission text={site.mission} /></p>
+      </article>
+      <article class="mv reveal">
+        <p class="eyebrow">Long-term vision</p>
+        <p class="statement small">{site.vision}</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── Gatherings ───────────────────────────────────────────────────── -->
+  <section class="section" id="gatherings">
+    <div class="wrap">
+      <div class="heading reveal">
+        <p class="eyebrow">Gatherings</p>
+        <h2>When we meet.</h2>
+      </div>
+      <div class="gatherings">
+        {
+          gatherings.map((g) => (
+            <article class="gathering reveal" id={g.id}>
+              <div class="g-when">
+                <span>{g.day}</span>
+                <b>{g.time}</b>
+                {g.extraTimes.map((t) => (
+                  <small>{t}</small>
+                ))}
+              </div>
+              <div class="g-body">
+                <p class="kicker">{g.kicker}</p>
+                <h3>{g.name}</h3>
+                {g.body.map((p) => (
+                  <p>{p}</p>
+                ))}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sermons ──────────────────────────────────────────────────────── -->
+  <section class="section cream" id="sermons">
+    <div class="wrap sermons reveal">
+      <div>
+        <p class="eyebrow">Sermons</p>
+        <h2>Catch up on recent sermons.</h2>
+        <p class="lead muted">Every Sunday’s message is posted to our YouTube channel.</p>
+      </div>
+      <a class="btn" href={site.links.sermons} target="_blank" rel="noopener">Watch on YouTube ↗</a>
+    </div>
+  </section>
+
+  <!-- ── Leadership ───────────────────────────────────────────────────── -->
+  <section class="section" id="leadership">
+    <div class="wrap">
+      <div class="heading reveal">
+        <p class="eyebrow">Leadership</p>
+        <h2>Our pastors and elders.</h2>
+      </div>
+      <ul class="leaders">
+        {
+          leaders.map((l) => {
+            const photo = photoFor(l.photo);
+            return (
+              <li class="reveal">
+                {photo && <Image src={photo} alt={`Portrait of ${l.name}`} width={480} height={480} />}
+                <h3>{l.name}</h3>
+                <p class="muted">{l.role}</p>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .who {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+  .facts dl {
+    margin: 0;
+    display: grid;
+    gap: var(--space-md);
+  }
+  .facts dt {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orange-ink);
+    margin-bottom: 0.2rem;
+  }
+  .facts dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .facts dd .muted {
+    display: block;
+    font-weight: 400;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-xs);
+  }
+  .facts div + div {
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--line);
+  }
+
+  .statement {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .statement.small {
+    font-size: var(--text-lg);
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  .gatherings {
+    display: grid;
+    gap: var(--space-md);
+  }
+  .gathering {
+    display: grid;
+    gap: var(--space-md) var(--space-lg);
+    grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr);
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 6rem;
+  }
+  .g-when {
+    display: grid;
+    align-content: start;
+    gap: 0.15rem;
+    font-family: var(--font-display);
+  }
+  .g-when span {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orange-ink);
+  }
+  .g-when b {
+    font-size: var(--text-2xl);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .g-when small {
+    margin-top: 0.6rem;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .g-body {
+    max-width: 44rem;
+  }
+  .g-body > * + * {
+    margin-top: 0.85em;
+  }
+  .kicker {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .g-body h3 {
+    margin-top: 0.15em;
+  }
+  @media (max-width: 40rem) {
+    .gathering {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sermons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+  .sermons .lead {
+    margin-top: var(--space-sm);
+  }
+
+  .leaders {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-lg) var(--space-md);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  }
+  .leaders li {
+    text-align: center;
+  }
+  .leaders img {
+    width: 100%;
+    max-width: 15rem;
+    margin: 0 auto var(--space-sm);
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--paper);
+    outline: 2px solid var(--orange);
+    transition: transform 0.5s var(--ease);
+  }
+  .leaders li:hover img {
+    transform: scale(1.03);
+  }
+  .leaders h3 {
+    font-size: var(--text-lg);
+  }
+</style>

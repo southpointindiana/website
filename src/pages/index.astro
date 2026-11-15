@@ -1,0 +1,456 @@
+---
+// HOME PAGE  →  https://www.southpointindiana.org/
+// Sections, top to bottom: Hero · Gatherings · Grow/Serve/Go · Who we are ·
+// Ministries · Visit. Facts (times, address, links) come from src/data/site.ts.
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Mission from '../components/Mission.astro';
+import logo from '../assets/logo.png';
+import growIcon from '../assets/icons/grow.png';
+import serveIcon from '../assets/icons/serve.png';
+import goIcon from '../assets/icons/go.png';
+import prayIcon from '../assets/icons/pray.png';
+import { gatherings, site } from '../data/site';
+
+const ministries = (await getCollection('ministries')).sort((a, b) => a.data.order - b.data.order);
+
+const pillars = [
+  {
+    word: 'Grow',
+    icon: growIcon,
+    text: 'Deepen your understanding of God’s Word and learn to apply its truths to everyday life.',
+    link: { label: 'Classes & gatherings', href: '/about#gatherings' },
+  },
+  {
+    word: 'Serve',
+    icon: serveIcon,
+    text: 'Every member of the body of Christ has a role to play, from young people to seniors.',
+    link: { label: 'Find a ministry', href: '/ministries' },
+  },
+  {
+    word: 'Go',
+    icon: goIcon,
+    text: 'Sent out to proclaim the glory of God and the transforming power of the gospel, wherever we are called.',
+    link: { label: 'Missions & evangelism', href: '/ministries#missions' },
+  },
+];
+---
+
+<Base>
+  <!-- ── Hero ─────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">{site.name} · {site.location}</p>
+        <h1><Mission text={site.mission} /></h1>
+        <p class="lead muted">
+          Join us Sundays at {gatherings[1].time} at {site.contact.street}, {site.contact.cityStateZip.split(',')[0]}.
+        </p>
+        <div class="btn-row">
+          <a class="btn" href="#visit">Plan a visit</a>
+          <a class="btn ghost" href={site.links.sermons} target="_blank" rel="noopener">Watch sermons</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span class="slab"></span>
+        <span class="slab thin"></span>
+        <Image src={logo} alt="" width={520} loading="eager" fetchpriority="high" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Gatherings (weekly times) ────────────────────────────────────── -->
+  <section class="gather">
+    <div class="wrap">
+      <h2 class="sr-only">Weekly gatherings</h2>
+      <div class="grid-auto times">
+        {
+          gatherings.map((g) => (
+            <a class="card time reveal" href={`/about#${g.id}`}>
+              <p class="when">
+                <span>{g.day}</span>
+                <b>{g.time}</b>
+              </p>
+              <h3>{g.name}</h3>
+              <p class="muted">{g.short}</p>
+              <span class="more">Learn more <i aria-hidden="true">→</i></span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Grow · Serve · Go ────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="wrap">
+      <div class="heading reveal">
+        <p class="eyebrow">Our mission</p>
+        <h2>Three words shape life together at South Point.</h2>
+      </div>
+      <div class="grid-auto pillars" style="--min: 15rem">
+        {
+          pillars.map((p) => (
+            <article class="pillar reveal">
+              <Image src={p.icon} alt="" width={320} />
+              <h3>{p.word}</h3>
+              <p class="muted">{p.text}</p>
+              <a href={p.link.href}>{p.link.label} →</a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Who we are (orange band) ─────────────────────────────────────── -->
+  <section class="band">
+    <div class="wrap band-grid">
+      <div class="reveal">
+        <p class="band-label">Who we are</p>
+        <p class="band-quote">
+          Jesus Christ is the Head of the church. He is the focal point of Scripture, of our preaching and teaching,
+          and of our worship.
+        </p>
+      </div>
+      <div class="band-side reveal">
+        <p>
+          We are an elder-led, congregational Baptist church, formed in 2020 through the merger of two local Baptist
+          churches. We affirm the Baptist Faith and Message 2000.
+        </p>
+        <a class="btn dark" href="/about">More about us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Ministries ───────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="wrap">
+      <div class="heading reveal">
+        <p class="eyebrow">Ministries</p>
+        <h2>A place for every age.</h2>
+        <p>From nursery to seniors, there are opportunities for everyone to grow, serve, and go in the name of Jesus.</p>
+      </div>
+      <div class="grid-auto" style="--min: 16rem">
+        {
+          ministries.map((m) => (
+            <a class="card mini reveal" href={m.data.page ?? `/ministries#${m.id}`}>
+              <h3>{m.data.title}</h3>
+              {m.data.audience && <p class="chip">{m.data.audience}</p>}
+              <p class="muted">{m.data.summary}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Visit / Pray / Sermons ───────────────────────────────────────── -->
+  <section class="section cream" id="visit">
+    <div class="wrap visit-grid">
+      <div class="visit-main reveal">
+        <p class="eyebrow">Plan a visit</p>
+        <h2>We’d love to meet you.</h2>
+        <p class="lead muted">
+          Everyone is welcome. Come as you are on a Sunday morning, or join us midweek for singing, prayer, Scripture,
+          and fellowship.
+        </p>
+        <address>
+          <a href={site.contact.mapUrl} target="_blank" rel="noopener">
+            {site.contact.street}<br />{site.contact.cityStateZip}
+          </a>
+          <a href={site.contact.phoneHref}>{site.contact.phone}</a>
+          <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+        </address>
+        <div class="btn-row">
+          <a class="btn" href={site.contact.mapUrl} target="_blank" rel="noopener">Get directions</a>
+          <a class="btn ghost" href={site.links.events} target="_blank" rel="noopener">Upcoming events</a>
+        </div>
+      </div>
+
+      <div class="visit-side">
+        <a class="card side reveal" href="/pray">
+          <Image src={prayIcon} alt="" width={120} />
+          <div>
+            <h3>How can we pray for you?</h3>
+            <p class="muted">Our pastors would be glad to pray for you.</p>
+          </div>
+        </a>
+        <a class="card side reveal" href={site.links.sermons} target="_blank" rel="noopener">
+          <span class="play" aria-hidden="true"></span>
+          <div>
+            <h3>Recent sermons</h3>
+            <p class="muted">Watch and listen on our YouTube channel.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--space-xl) var(--space-2xl);
+    background:
+      radial-gradient(60rem 30rem at 0% 0%, var(--orange-tint), transparent 70%),
+      var(--paper);
+  }
+  .hero-grid {
+    display: grid;
+    align-items: center;
+    gap: var(--space-lg);
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+  .hero-copy > * + * {
+    margin-top: var(--space-md);
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 1.3rem + 3.9vw, 4.4rem);
+    font-weight: 500;
+  }
+  .hero h1 :global(.gsg) {
+    font-weight: 800;
+    color: var(--orange);
+    /* brand orange is used here at display size only; body-size text uses --orange-ink */
+  }
+  .hero .lead {
+    max-width: 34rem;
+  }
+
+  .hero-art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: clamp(16rem, 34vw, 30rem);
+  }
+  .hero-art img {
+    position: relative;
+    width: clamp(11rem, 26vw, 21rem);
+    filter: drop-shadow(0 24px 28px rgb(38 39 43 / 0.16));
+    animation: float 9s ease-in-out infinite;
+  }
+  /* Slanted orange panels behind the logo (the shape from the brand banner) */
+  .slab {
+    position: absolute;
+    inset: -40% -60% -60% 22%;
+    background: linear-gradient(160deg, var(--orange-soft), var(--orange));
+    transform: skewX(-24deg);
+    opacity: 0.16;
+  }
+  .slab.thin {
+    inset: -40% auto -60% 6%;
+    width: clamp(0.6rem, 1.6vw, 1.4rem);
+    opacity: 0.55;
+  }
+  @keyframes float {
+    50% {
+      translate: 0 -0.9rem;
+      rotate: 1.2deg;
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    .hero {
+      padding-block: var(--space-lg) var(--space-2xl);
+    }
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-art {
+      order: -1;
+      min-height: 0;
+      justify-items: start;
+    }
+    .hero-art img {
+      width: clamp(6.5rem, 30vw, 10rem);
+    }
+    .slab {
+      inset: -200% -80% -900% 48%;
+      opacity: 0.12;
+    }
+    .slab.thin {
+      display: none;
+    }
+  }
+
+  /* ── Gatherings: cards overlap the bottom of the hero ── */
+  .gather {
+    margin-top: calc(-1 * var(--space-xl));
+    position: relative;
+  }
+  .time {
+    display: grid;
+    gap: 0.45rem;
+    align-content: start;
+  }
+  .when {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    font-family: var(--font-display);
+    color: var(--orange-ink);
+  }
+  .when span {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .when b {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .time h3 {
+    font-size: var(--text-lg);
+  }
+  .more {
+    margin-top: 0.4rem;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--orange-ink);
+  }
+  .more i {
+    display: inline-block;
+    font-style: normal;
+    transition: translate 0.3s var(--ease);
+  }
+  .time:hover .more i {
+    translate: 0.35em 0;
+  }
+
+  /* ── Grow / Serve / Go ── */
+  .pillar {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: start;
+    align-content: start;
+  }
+  .pillar img {
+    width: clamp(6rem, 5rem + 5vw, 9.5rem);
+    border-radius: 50%;
+    margin-bottom: var(--space-xs);
+    transition: transform 0.6s var(--ease);
+  }
+  .pillar:hover img {
+    transform: scale(1.05) rotate(-3deg);
+  }
+  .pillar h3 {
+    font-size: var(--text-2xl);
+  }
+  .pillar a {
+    font-weight: 700;
+  }
+
+  /* ── Orange band ── */
+  .band {
+    position: relative;
+    padding-block: var(--space-xl);
+    background: linear-gradient(120deg, var(--orange) 0%, var(--orange-soft) 100%);
+    color: var(--ink);
+    clip-path: polygon(0 clamp(1rem, 3vw, 2.5rem), 100% 0, 100% calc(100% - clamp(1rem, 3vw, 2.5rem)), 0 100%);
+    margin-block: var(--space-sm);
+  }
+  .band-grid {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: end;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    padding-block: var(--space-md);
+  }
+  .band-label {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+  }
+  .band-quote {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .band-side {
+    display: grid;
+    gap: var(--space-md);
+    justify-items: start;
+    font-size: var(--text-lg);
+  }
+
+  /* ── Ministry mini cards ── */
+  .mini {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+    justify-items: start;
+  }
+  .mini h3 {
+    font-size: var(--text-lg);
+  }
+
+  /* ── Visit ── */
+  .visit-grid {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+  .visit-main > * + * {
+    margin-top: var(--space-md);
+  }
+  address {
+    display: grid;
+    gap: 0.35rem;
+    justify-items: start;
+    font-style: normal;
+    font-size: var(--text-lg);
+  }
+  address a {
+    color: var(--ink);
+    text-decoration-color: var(--orange);
+  }
+  .visit-side {
+    display: grid;
+    gap: var(--space-md);
+  }
+  .side {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+  .side img,
+  .play {
+    flex: none;
+    width: clamp(4rem, 3.5rem + 2vw, 5.5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+  }
+  .side h3 {
+    font-size: var(--text-lg);
+    margin-bottom: 0.25rem;
+  }
+  /* CSS-only "play" badge */
+  .play {
+    display: grid;
+    place-items: center;
+    background: var(--orange);
+  }
+  .play::after {
+    content: '';
+    width: 0;
+    height: 0;
+    margin-left: 8%;
+    border-block: 0.7rem solid transparent;
+    border-left: 1.15rem solid var(--paper);
+  }
+</style>

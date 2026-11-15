@@ -1,0 +1,232 @@
+---
+// Sticky site header. Links come from `nav` in src/data/site.ts.
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { nav, site } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => href !== '/' && path.startsWith(href);
+---
+
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${site.name} — home`}>
+      <Image src={logo} alt="" height={96} loading="eager" />
+      <span class="wordmark">South <span>Point</span></span>
+    </a>
+
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-btn>
+      <span class="sr-only">Menu</span>
+      <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+
+    <nav id="site-nav" class="nav" aria-label="Main">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+                {...('external' in item ? { target: '_blank', rel: 'noopener' } : {})}
+              >
+                {item.label}
+                {'external' in item && <span class="ext" aria-hidden="true">↗</span>}
+              </a>
+            </li>
+          ))
+        }
+        <li class="give">
+          <a class="btn" href={site.links.give} target="_blank" rel="noopener">Give</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle. The menu is plain links, so it still works without JS
+  // on desktop; on phones this opens/closes the panel.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+  if (header && btn) {
+    const set = (open: boolean) => {
+      header.toggleAttribute('data-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    };
+    btn.addEventListener('click', () => set(!header.hasAttribute('data-open')));
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
+    header.querySelectorAll('nav a').forEach((a) => a.addEventListener('click', () => set(false)));
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    min-height: clamp(3.75rem, 3.2rem + 2vw, 4.75rem);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: var(--gray);
+  }
+  .brand img {
+    height: clamp(2.2rem, 1.9rem + 1vw, 2.8rem);
+    width: auto;
+    transition: transform 0.5s var(--ease);
+  }
+  .brand:hover img {
+    transform: translateY(-2px) rotate(-4deg);
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(0.95rem, 0.85rem + 0.4vw, 1.15rem);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .wordmark span {
+    color: var(--orange-ink);
+  }
+
+  .nav ul {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.25rem, 1.4vw, 1.25rem);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nav a:not(.btn) {
+    position: relative;
+    display: inline-block;
+    padding: 0.5em 0.6em;
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  /* Slanted underline that grows on hover / marks the current page */
+  .nav a:not(.btn)::after {
+    content: '';
+    position: absolute;
+    left: 0.6em;
+    right: 0.6em;
+    bottom: 0.15em;
+    height: 0.22em;
+    background: var(--orange);
+    transform: skewX(-24deg) scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease);
+  }
+  .nav a:not(.btn):hover::after,
+  .nav a[aria-current='page']::after {
+    transform: skewX(-24deg) scaleX(1);
+  }
+  .ext {
+    font-size: 0.75em;
+    margin-left: 0.25em;
+    color: var(--muted);
+  }
+  .nav .btn {
+    padding: 0.6em 1.3em;
+  }
+
+  .menu-btn {
+    display: none;
+  }
+
+  /* ── Phones & small tablets: collapse nav into a drop-down panel ── */
+  @media (max-width: 47.99rem) {
+    .menu-btn {
+      display: grid;
+      place-items: center;
+      width: 2.9rem;
+      height: 2.9rem;
+      margin-right: -0.5rem;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+    }
+    .bars {
+      display: grid;
+      gap: 5px;
+      width: 1.5rem;
+    }
+    .bars i {
+      height: 2.5px;
+      border-radius: 2px;
+      background: var(--ink);
+      transition:
+        transform 0.3s var(--ease),
+        opacity 0.2s;
+    }
+    [data-open] .bars i:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    [data-open] .bars i:nth-child(2) { opacity: 0; }
+    [data-open] .bars i:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    .nav {
+      position: absolute;
+      inset: 100% 0 auto 0;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 24px 40px -24px rgb(38 39 43 / 0.35);
+      /* closed state */
+      display: grid;
+      grid-template-rows: 0fr;
+      visibility: hidden;
+      transition:
+        grid-template-rows 0.35s var(--ease),
+        visibility 0.35s;
+    }
+    [data-open] .nav {
+      grid-template-rows: 1fr;
+      visibility: visible;
+    }
+    .nav ul {
+      overflow: hidden;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding-inline: var(--gutter);
+    }
+    .nav li:first-child { padding-top: var(--space-sm); }
+    .nav li:last-child { padding-bottom: var(--space-md); }
+    .nav a:not(.btn) {
+      display: block;
+      padding: 0.8em 0;
+      font-size: var(--text-lg);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav a:not(.btn)::after {
+      display: none;
+    }
+    .nav a[aria-current='page'] {
+      color: var(--orange-ink);
+    }
+    .nav .give {
+      padding-top: var(--space-md);
+    }
+    .nav .btn {
+      width: 100%;
+      padding: 0.9em;
+    }
+  }
+</style>

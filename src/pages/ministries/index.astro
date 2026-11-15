@@ -1,0 +1,160 @@
+---
+// MINISTRIES PAGE  →  /ministries
+// Each ministry is a Markdown file in src/content/ministries/. To add, remove,
+// or reword a ministry, edit those files — this page updates automatically.
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Mission from '../../components/Mission.astro';
+
+const ministries = (await getCollection('ministries')).sort((a, b) => a.data.order - b.data.order);
+const rendered = await Promise.all(ministries.map(async (m) => ({ m, Content: (await render(m)).Content })));
+---
+
+<Base title="Ministries" description="Kids, youth, men’s, women’s, missions, deacon ministries, and the Manger Shop at South Point Church.">
+  <PageHero eyebrow="Ministries" title="Every member has a role to play.">
+    <Mission
+      text="We believe every member of the body of Christ has a role to play. At South Point, you will find opportunities for every age — from young people to seniors — to grow, serve, and go in the name of Jesus."
+    />
+  </PageHero>
+
+  <section class="section">
+    <div class="wrap layout">
+      <!-- Jump links: a sticky sidebar on desktop, a swipeable row on phones -->
+      <nav class="jump" aria-label="Ministries on this page">
+        <ul>
+          {ministries.map((m) => <li><a href={`#${m.id}`}>{m.data.title}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="list">
+        {
+          rendered.map(({ m, Content }) => (
+            <article class="ministry reveal" id={m.id}>
+              <header>
+                <h2>{m.data.title}</h2>
+                {m.data.audience && <p class="chip">{m.data.audience}</p>}
+              </header>
+              {m.data.when.length > 0 && (
+                <ul class="when">
+                  {m.data.when.map((w) => (
+                    <li>{w}</li>
+                  ))}
+                </ul>
+              )}
+              <div class="prose">
+                <Content />
+              </div>
+              {m.data.page && (
+                <a class="btn" href={m.data.page}>
+                  Visit {m.data.title} →
+                </a>
+              )}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-lg) var(--space-xl);
+    grid-template-columns: 13rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .jump {
+    position: sticky;
+    top: 6.5rem;
+  }
+  .jump ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.15rem;
+    border-left: 2px solid var(--line);
+  }
+  .jump a {
+    display: block;
+    padding: 0.4em 0 0.4em 1em;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .jump a:hover {
+    color: var(--ink);
+    border-color: var(--orange);
+  }
+
+  .list {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .ministry {
+    display: grid;
+    gap: var(--space-md);
+    justify-items: start;
+    scroll-margin-top: 6.5rem;
+  }
+  .ministry header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+  .ministry h2 {
+    font-size: var(--text-2xl);
+  }
+  .when {
+    list-style: none;
+    padding: 0.2em 0 0.2em var(--space-md);
+    border-left: 0.3rem solid var(--orange);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    display: grid;
+    gap: 0.15em;
+  }
+
+  @media (max-width: 52rem) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    .jump {
+      top: clamp(3.75rem, 3.2rem + 2vw, 4.75rem);
+      z-index: 5;
+      margin-inline: calc(-1 * var(--gutter));
+      padding: 0.6rem var(--gutter);
+      background: color-mix(in srgb, var(--paper) 92%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .jump ul {
+      display: flex;
+      gap: 0.5rem;
+      border: 0;
+      width: max-content;
+    }
+    .jump a {
+      margin: 0;
+      padding: 0.4em 0.95em;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      white-space: nowrap;
+    }
+  }
+</style>

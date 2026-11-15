@@ -1,0 +1,60 @@
+---
+// PRAY PAGE  →  /pray
+// The button opens the prayer request form (`links.prayerForm` in src/data/site.ts).
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import icon from '../assets/icons/pray.png';
+import { site } from '../data/site';
+---
+
+<Base title="Pray" description="Share a prayer request with the pastors of South Point Church.">
+  <section class="pray">
+    <div class="wrap narrow stack">
+      <Image src={icon} alt="" width={420} loading="eager" />
+      <p class="eyebrow">Pray</p>
+      <h1>How can we pray for you?</h1>
+      <p class="lead muted">
+        If you would like our pastors to pray for you, share your request with us. We count it a privilege.
+      </p>
+      <div class="btn-row">
+        <a class="btn" href={site.links.prayerForm} target="_blank" rel="noopener">Share a prayer request ↗</a>
+      </div>
+      <p class="muted small">
+        Prefer to talk? Call <a href={site.contact.phoneHref}>{site.contact.phone}</a> or email
+        <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pray {
+    padding-block: var(--space-xl);
+    text-align: center;
+    background: radial-gradient(50rem 26rem at 50% 0%, var(--orange-tint), transparent 70%);
+  }
+  .pray img {
+    width: clamp(8rem, 6rem + 10vw, 13rem);
+    margin-inline: auto;
+    border-radius: 50%;
+    animation: bob 7s ease-in-out infinite;
+  }
+  .pray .eyebrow {
+    margin-bottom: 0;
+  }
+  .pray h1 {
+    font-size: var(--text-2xl);
+    --flow: var(--space-sm);
+  }
+  .btn-row {
+    justify-content: center;
+  }
+  .small {
+    font-size: var(--text-sm);
+  }
+  @keyframes bob {
+    50% {
+      translate: 0 -0.6rem;
+    }
+  }
+</style>

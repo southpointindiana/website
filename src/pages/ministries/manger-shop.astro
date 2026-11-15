@@ -1,0 +1,150 @@
+---
+// THE MANGER SHOP  →  /ministries/manger-shop
+// Hours come from `mangerShop` in src/data/site.ts.
+// Photos live in src/assets/manger-shop/.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import icon from '../../assets/manger-shop/icon.png';
+import sign from '../../assets/manger-shop/sign.jpg';
+import volunteers from '../../assets/manger-shop/volunteers.jpg';
+import playroom from '../../assets/manger-shop/playroom.jpg';
+import { mangerShop, site } from '../../data/site';
+
+const photos = [
+  { src: volunteers, alt: 'Three Manger Shop volunteers holding diapers and baby supplies' },
+  { src: sign, alt: 'Two volunteers beside the Manger Shop sign at the church entrance' },
+  { src: playroom, alt: 'A toddler playing in the Manger Shop play area' },
+];
+---
+
+<Base title="The Manger Shop" description={mangerShop.tagline}>
+  <section class="ms-hero">
+    <div class="wrap ms-grid">
+      <Image class="ms-icon" src={icon} alt="" width={300} loading="eager" />
+      <div>
+        <p class="eyebrow">A ministry of South Point</p>
+        <h1>The Manger Shop</h1>
+        <p class="lead">{mangerShop.tagline}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid-auto" style="--min: 19rem">
+      {
+        mangerShop.hours.map((h) => (
+          <div class="card info reveal">
+            <p class="label">Open</p>
+            <h2>{h.when}</h2>
+            <p class="big">{h.time}</p>
+          </div>
+        ))
+      }
+      <div class="card info reveal">
+        <p class="label">Where</p>
+        <h2>{site.name}</h2>
+        <p>
+          <a href={site.contact.mapUrl} target="_blank" rel="noopener">
+            {site.contact.street}<br />{site.contact.cityStateZip}
+          </a>
+        </p>
+      </div>
+      <div class="card info reveal">
+        <p class="label">Questions?</p>
+        <h2>Contact the church office</h2>
+        <p>
+          <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a><br />
+          <a href={site.contact.phoneHref}>{site.contact.phone}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cream">
+    <div class="wrap">
+      <h2 class="sr-only">Photos</h2>
+      <ul class="gallery">
+        {
+          photos.map((p) => (
+            <li class="reveal">
+              <Image src={p.src} alt={p.alt} width={900} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <div class="wrap back">
+    <a href="/ministries">← All ministries</a>
+  </div>
+</Base>
+
+<style>
+  .ms-hero {
+    padding-block: var(--space-xl);
+    background: linear-gradient(180deg, var(--orange-tint), var(--paper));
+  }
+  .ms-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+  .ms-icon {
+    width: clamp(6.5rem, 4rem + 12vw, 12rem);
+  }
+  .ms-grid > div {
+    flex: 1 1 18rem;
+  }
+  .ms-grid .lead {
+    margin-top: var(--space-sm);
+    max-width: 30rem;
+    color: var(--muted);
+  }
+
+  .info {
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+  .label {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orange-ink);
+  }
+  .info h2 {
+    font-size: var(--text-lg);
+  }
+  .big {
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* Masonry-style columns: photos keep their natural shape (no cropping). */
+  .gallery {
+    list-style: none;
+    padding: 0;
+    columns: 3 16rem;
+    column-gap: var(--space-md);
+  }
+  .gallery li {
+    break-inside: avoid;
+    margin-bottom: var(--space-md);
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .back {
+    padding-top: var(--space-lg);
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+// Site footer: contact details, gathering times, and quick links.
+// All values come from src/data/site.ts.
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+import { gatherings, nav, site } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap cols">
+    <div class="about">
+      <a class="brand" href="/" aria-label={`${site.name} — home`}>
+        <Image src={logo} alt="" height={120} />
+        <span>South <b>Point</b> Church</span>
+      </a>
+      <p class="muted">{site.mission}</p>
+    </div>
+
+    <div>
+      <h2>Gather with us</h2>
+      <ul>
+        {gatherings.map((g) => <li><b>{g.day} {g.time}</b><br />{g.name}</li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h2>Find us</h2>
+      <ul>
+        <li>
+          <a href={site.contact.mapUrl} target="_blank" rel="noopener">
+            {site.contact.street}<br />{site.contact.cityStateZip}
+          </a>
+        </li>
+        <li><a href={site.contact.phoneHref}>{site.contact.phone}</a></li>
+        <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2>Explore</h2>
+      <ul>
+        {nav.map((n) => <li><a href={n.href} {...('external' in n ? { target: '_blank', rel: 'noopener' } : {})}>{n.label}</a></li>)}
+        <li><a href={site.links.give} target="_blank" rel="noopener">Give</a></li>
+        <li><a href={site.links.sermons} target="_blank" rel="noopener">Sermons</a></li>
+        <li><a href={site.links.facebook} target="_blank" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <p>© {year} {site.name} · {site.location}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-xl);
+    background: var(--ink);
+    color: #d9d9dc;
+    font-size: var(--text-sm);
+    /* slanted top edge, echoing the brand's parallelogram shapes */
+    clip-path: polygon(0 clamp(1rem, 3vw, 2.5rem), 100% 0, 100% 100%, 0 100%);
+  }
+  .cols {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+  }
+  .about {
+    grid-column: span 1;
+    max-width: 22rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: var(--space-sm);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .brand img {
+    height: 3rem;
+    width: auto;
+  }
+  .brand b {
+    color: var(--orange);
+    font-weight: 600;
+  }
+  .about .muted {
+    color: #b9b9be;
+  }
+  h2 {
+    font-size: var(--text-sm);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: var(--space-sm);
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.55em;
+  }
+  b {
+    color: #fff;
+  }
+  a {
+    color: inherit;
+    text-decoration-color: transparent;
+  }
+  a:hover {
+    color: var(--orange);
+    text-decoration-color: currentColor;
+  }
+  .legal {
+    margin-top: var(--space-lg);
+    padding-block: var(--space-md);
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+    color: #a3a3a9;
+  }
+</style>

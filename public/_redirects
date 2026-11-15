@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects. Keeps links to the old Google Sites URLs working.
+/home            /        301
+/about-us_1      /about   301
+/about-us        /about   301

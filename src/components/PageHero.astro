@@ -1,0 +1,66 @@
+---
+// Title band at the top of inner pages (About, Ministries, Pray, …).
+//   <PageHero eyebrow="Small label" title="Big title">Optional intro text</PageHero>
+interface Props {
+  title: string;
+  eyebrow?: string;
+}
+const { title, eyebrow } = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="wrap">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    {Astro.slots.has('default') && <div class="intro lead"><slot /></div>}
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: var(--space-xl) var(--space-lg);
+    background: linear-gradient(180deg, var(--orange-tint), var(--paper));
+  }
+  /* Big slanted orange stripes in the corner */
+  .page-hero::before,
+  .page-hero::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -10%;
+    height: 120%;
+    transform: skewX(-24deg);
+    background: var(--orange);
+  }
+  .page-hero::before {
+    right: clamp(-6rem, -4vw, -2rem);
+    width: clamp(5rem, 16vw, 15rem);
+    opacity: 0.9;
+  }
+  .page-hero::after {
+    right: clamp(1.5rem, 14vw, 15rem);
+    width: clamp(0.6rem, 1.6vw, 1.4rem);
+    opacity: 0.45;
+  }
+  .wrap > * {
+    max-width: min(44rem, 78%);
+  }
+  .intro {
+    margin-top: var(--space-md);
+    color: var(--muted);
+  }
+  @media (max-width: 36rem) {
+    .wrap > * {
+      max-width: 100%;
+    }
+    .page-hero::before {
+      opacity: 0.16;
+    }
+    .page-hero::after {
+      display: none;
+    }
+  }
+</style>

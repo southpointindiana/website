@@ -1,0 +1,390 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   South Point Church — global styles
+
+   1. DESIGN TOKENS  ← change colors, fonts, sizes, spacing here
+   2. Base elements
+   3. Layout helpers (.wrap, .section, .grid-auto, .stack)
+   4. Shared pieces  (.btn, .card, .eyebrow, .chip, .prose)
+   5. Motion         (scroll reveal, page transitions)
+
+   Component-specific styles live in a <style> block inside each .astro file.
+   Always use the tokens (var(--…)) instead of raw colors or pixel sizes.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. DESIGN TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* Brand colors (taken from the logo) */
+  --orange: #f68d30;        /* brand orange — backgrounds, accents, large shapes */
+  --orange-soft: #f8a459;   /* lighter orange — hovers, gradients */
+  --orange-ink: #b4530a;    /* darker orange that is readable as TEXT on white */
+  --orange-tint: #fef3e7;   /* very pale orange — section backgrounds */
+  --gray: #77787b;          /* logo gray */
+
+  /* Neutrals */
+  --ink: #26272b;           /* main text */
+  --muted: #5d5e63;         /* secondary text */
+  --line: #e6e2db;          /* hairlines and borders */
+  --cream: #f6f2eb;         /* warm off-white — matches the paper-cut icons */
+  --paper: #ffffff;         /* page background */
+
+  /* Fonts (self-hosted, loaded in src/layouts/Base.astro) */
+  --font-display: 'Lexend Variable', 'Lexend', system-ui, sans-serif;
+  --font-body: 'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Fluid type scale: each step grows smoothly between phone and desktop */
+  --text-sm: clamp(0.84rem, 0.81rem + 0.14vw, 0.92rem);
+  --text-base: clamp(1rem, 0.95rem + 0.24vw, 1.15rem);
+  --text-lg: clamp(1.15rem, 1.06rem + 0.45vw, 1.42rem);
+  --text-xl: clamp(1.4rem, 1.2rem + 0.95vw, 2rem);
+  --text-2xl: clamp(1.8rem, 1.4rem + 1.9vw, 3rem);
+  --text-3xl: clamp(2.25rem, 1.5rem + 3.6vw, 4.6rem);
+
+  /* Fluid spacing */
+  --space-xs: clamp(0.5rem, 0.45rem + 0.25vw, 0.65rem);
+  --space-sm: clamp(0.75rem, 0.68rem + 0.4vw, 1rem);
+  --space-md: clamp(1.15rem, 1rem + 0.8vw, 1.7rem);
+  --space-lg: clamp(1.75rem, 1.4rem + 1.8vw, 3rem);
+  --space-xl: clamp(3rem, 2.2rem + 4vw, 6rem);
+  --space-2xl: clamp(4rem, 2.8rem + 6vw, 8.5rem);
+
+  /* Shape */
+  --gutter: clamp(1.1rem, 0.6rem + 2.6vw, 3rem);  /* page side padding */
+  --max: 74rem;                                   /* max content width */
+  --radius: 1.1rem;
+  --radius-lg: clamp(1.25rem, 1rem + 1.4vw, 2.25rem);
+  --slant: 1.1rem;                                /* the brand's slanted edge */
+  --shadow: 0 1px 2px rgb(38 39 43 / 0.05), 0 10px 30px -12px rgb(38 39 43 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(38 39 43 / 0.06), 0 22px 44px -16px rgb(180 83 10 / 0.3);
+  --ease: cubic-bezier(0.22, 0.8, 0.26, 1);
+}
+
+/* ── 2. Base elements ─────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem; /* keeps #anchor targets clear of the sticky header */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); letter-spacing: -0.01em; }
+
+p,
+ul,
+ol {
+  margin: 0;
+}
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--orange-ink);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere; /* long emails/URLs wrap instead of overflowing */
+  transition: color 0.2s var(--ease);
+}
+a:hover {
+  color: var(--ink);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+/* ── 3. Layout helpers ────────────────────────────────────────────────────── */
+
+/* Centers content and adds the page side padding. */
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+.wrap.narrow {
+  --max: 46rem;
+}
+
+/* A vertical band of the page. Add .tint or .cream for a background. */
+.section {
+  padding-block: var(--space-xl);
+}
+.section.tint { background: var(--orange-tint); }
+.section.cream { background: var(--cream); }
+
+/* Vertical rhythm: space between direct children. */
+.stack > * + * {
+  margin-top: var(--flow, var(--space-md));
+}
+
+/* Responsive grid with no breakpoints: as many columns as fit. */
+.grid-auto {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min, 17rem)), 1fr));
+}
+
+/* Section heading block */
+.heading {
+  max-width: 44rem;
+  margin-bottom: var(--space-lg);
+}
+.heading > p {
+  margin-top: var(--space-sm);
+  font-size: var(--text-lg);
+  color: var(--muted);
+}
+
+/* ── 4. Shared pieces ─────────────────────────────────────────────────────── */
+
+/* Small uppercase label above a heading */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange-ink);
+  margin-bottom: var(--space-sm);
+}
+.eyebrow::before {
+  content: '';
+  width: 1.6em;
+  height: 0.5em;
+  background: var(--orange);
+  transform: skewX(-24deg);
+}
+
+/* Buttons: <a class="btn">, add .ghost for the outlined variant */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.85em 1.5em;
+  border-radius: 999px;
+  border: 2px solid var(--orange);
+  background: var(--orange);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease),
+    box-shadow 0.25s var(--ease),
+    background-color 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+}
+.btn:hover {
+  color: var(--ink);
+  background: var(--orange-soft);
+  border-color: var(--orange-soft);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+.btn.ghost {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.btn.ghost:hover {
+  background: var(--paper);
+  border-color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.btn.dark {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+.btn.dark:hover {
+  background: #000;
+  border-color: #000;
+  color: var(--paper);
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+/* Cards */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  box-shadow: var(--shadow);
+}
+a.card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+a.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--orange);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Small pill labels */
+.chip {
+  display: inline-block;
+  padding: 0.35em 0.9em;
+  border-radius: 999px;
+  background: var(--orange-tint);
+  border: 1px solid color-mix(in srgb, var(--orange) 35%, transparent);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  list-style: none;
+  padding: 0;
+}
+
+/* Long-form text (Markdown content, About page paragraphs) */
+.prose {
+  max-width: 42rem;
+}
+.prose > * + * {
+  margin-top: 1em;
+}
+.prose ul {
+  padding-left: 0;
+  list-style: none;
+}
+.prose li {
+  position: relative;
+  padding-left: 1.5em;
+}
+.prose li + li {
+  margin-top: 0.35em;
+}
+.prose li::before {
+  content: '';
+  position: absolute;
+  left: 0.1em;
+  top: 0.62em;
+  width: 0.75em;
+  height: 0.32em;
+  background: var(--orange);
+  transform: skewX(-24deg);
+}
+.prose em {
+  color: var(--muted);
+}
+
+/* The words grow / serve / go, highlighted wherever they appear */
+.gsg {
+  font-weight: 700;
+  color: var(--orange-ink);
+}
+
+.muted { color: var(--muted); }
+.lead { font-size: var(--text-lg); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── 5. Motion ────────────────────────────────────────────────────────────── */
+
+/* Smooth cross-fade between pages (browsers that support it; others just load). */
+@view-transition {
+  navigation: auto;
+}
+
+/* Add class="reveal" to any element to have it rise into place as it scrolls
+   into view. Pure CSS; in browsers without support the element simply shows. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 38%;
+    }
+  }
+}
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    translate: 0 2.2rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
