@@ -103,6 +103,16 @@ const photos = [
     color: var(--muted);
   }
 
+  @media (max-width: 36rem) {
+    .ms-grid {
+      justify-content: center;
+      text-align: center;
+    }
+    .ms-grid .lead {
+      margin-inline: auto;
+    }
+  }
+
   .info {
     display: grid;
     gap: 0.4rem;

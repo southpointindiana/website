@@ -443,4 +443,33 @@ const pillars = [
     font-size: var(--text-lg);
     margin-bottom: 0.25rem;
   }
+
+  /* ── Phones: center the artwork, icons, and short text blocks ── */
+  @media (max-width: 36rem) {
+    .hero-art {
+      justify-items: center;
+    }
+    .hero-copy,
+    .visit-main {
+      text-align: center;
+    }
+    .hero .lead {
+      margin-inline: auto;
+    }
+    .hero-copy .btn-row,
+    .visit-main .btn-row {
+      justify-content: center;
+    }
+    address {
+      justify-items: center;
+    }
+    .pillar {
+      justify-items: center;
+      text-align: center;
+    }
+    .side {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
 </style>

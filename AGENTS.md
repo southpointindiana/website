@@ -93,7 +93,9 @@ public/                   ← files copied as-is (favicon, _redirects, robots.tx
    `--space-*`) and grids use `.grid-auto` / `auto-fit`, so layouts adapt
    smoothly to any screen. Avoid fixed pixel widths and avoid adding new
    breakpoints unless a layout truly needs one. Check every change at phone
-   width (~390px) and desktop width (~1360px).
+   width (~390px) and desktop width (~1360px). On phones (≤ 36rem) artwork,
+   icons, section headings, and short text blocks are centered; long-form
+   text and card contents stay left-aligned.
 6. **Keep it simple and static.** No UI frameworks (React, Vue, Tailwind…), no
    server code, no client-side JavaScript beyond tiny progressive enhancements,
    no new dependencies without asking the user first.
