@@ -1,0 +1,14 @@
+// Cloudflare Workers configuration. The site is a Worker that serves the
+// static files Astro builds into dist/ — there is no server code.
+// Cloudflare runs `npm run build`, then `npx wrangler deploy`, which reads this file.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker's name in the Cloudflare dashboard.
+  "name": "southpointwebsite",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // Serve dist/404.html (src/pages/404.astro) for addresses that don't exist.
+    "not_found_handling": "404-page"
+  }
+}
