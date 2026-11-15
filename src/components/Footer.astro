@@ -50,13 +50,9 @@ const year = new Date().getFullYear();
   </div>
   <div class="wrap legal">
     <p>© {year} {site.name} · {site.location}</p>
-    {
-      build && (
-        <p class="version" title="Site version">
-          Updated <time datetime={build.iso}>{build.label}</time> · {build.hash}
-        </p>
-      )
-    }
+    <p class="version" title="Site version">
+      Updated <time datetime={build.iso}>{build.label}</time>{build.hash && ` · ${build.hash}`}
+    </p>
   </div>
 </footer>
 

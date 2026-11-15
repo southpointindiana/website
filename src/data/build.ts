@@ -3,7 +3,7 @@
 // (Shows the most recent commit; uncommitted local edits are not reflected.)
 import { execSync } from 'node:child_process';
 
-function readGit(): { hash: string; date: Date } | null {
+function readGit(): { hash: string | null; date: Date } {
   try {
     // %h = short hash, %cI = commit time in ISO 8601
     const out = execSync('git log -1 --format=%h%n%cI', { stdio: ['ignore', 'pipe', 'ignore'] })
@@ -11,17 +11,21 @@ function readGit(): { hash: string; date: Date } | null {
       .trim();
     const [hash, iso] = out.split('\n');
     const date = new Date(iso);
-    return hash && !Number.isNaN(date.getTime()) ? { hash, date } : null;
+    if (hash && !Number.isNaN(date.getTime())) return { hash, date };
   } catch {
-    // git unavailable: fall back to the hash Cloudflare Pages provides, if any.
-    const sha = process.env.CF_PAGES_COMMIT_SHA;
-    return sha ? { hash: sha.slice(0, 7), date: new Date() } : null;
+    // git is not usable in this build environment; fall through.
   }
+  // Fallback: the commit hash that Cloudflare's build systems expose as an
+  // environment variable (Pages, then Workers Builds), with the build time
+  // standing in for the commit time. If no hash is available either, the
+  // footer shows just the time.
+  const sha = process.env.CF_PAGES_COMMIT_SHA || process.env.WORKERS_CI_COMMIT_SHA;
+  return { hash: sha ? sha.slice(0, 7) : null, date: new Date() };
 }
 
 const info = readGit();
 
-export const build = info && {
+export const build = {
   hash: info.hash,
   iso: info.date.toISOString(),
   /** e.g. "Nov 15, 2026, 3:57 PM ET" (church local time) */
