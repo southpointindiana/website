@@ -46,6 +46,7 @@ src/
     404.astro               not-found page
   layouts/Base.astro      ← <head>, header, footer, fonts — wraps every page
   components/             ← Header, Footer, PageHero, Mission, Sermons
+  data/build.ts           ← commit hash + time shown faintly in the footer (from git)
   styles/global.css       ← design tokens (colors, type, spacing) + shared classes
   assets/                 ← images processed by Astro (logo, icons, photos)
 public/                   ← files copied as-is (favicon, _redirects, robots.txt)

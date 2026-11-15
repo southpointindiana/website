@@ -3,6 +3,7 @@
 // All values come from src/data/site.ts.
 import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
+import { build } from '../data/build';
 import { gatherings, nav, site } from '../data/site';
 const year = new Date().getFullYear();
 ---
@@ -49,6 +50,13 @@ const year = new Date().getFullYear();
   </div>
   <div class="wrap legal">
     <p>© {year} {site.name} · {site.location}</p>
+    {
+      build && (
+        <p class="version" title="Site version">
+          Updated <time datetime={build.iso}>{build.label}</time> · {build.hash}
+        </p>
+      )
+    }
   </div>
 </footer>
 
@@ -122,5 +130,16 @@ const year = new Date().getFullYear();
     padding-block: var(--space-md);
     border-top: 1px solid rgb(255 255 255 / 0.12);
     color: #a3a3a9;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem var(--space-md);
+  }
+  /* Site version (commit + time): deliberately faint */
+  .version {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.45;
   }
 </style>
