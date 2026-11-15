@@ -1,0 +1,84 @@
+---
+// "Recent sermons" section: an embedded YouTube player that always shows the
+// newest upload from the church's channel (plus a playlist of earlier ones),
+// so nothing here needs updating week to week.
+// The channel is set by `youtubeChannelId` in src/data/site.ts.
+//   <Sermons />            on a white background
+//   <Sermons tone="cream"> on the warm off-white background
+import { site } from '../data/site';
+
+interface Props {
+  tone?: 'plain' | 'cream';
+}
+const { tone = 'plain' } = Astro.props;
+
+// Every channel has an automatic "uploads" playlist: its ID is the channel ID
+// with the leading "UC" replaced by "UU".
+const uploads = site.youtubeChannelId.replace(/^UC/, 'UU');
+const embedUrl = `https://www.youtube-nocookie.com/embed/videoseries?list=${uploads}&rel=0`;
+---
+
+<section class:list={['section', { cream: tone === 'cream' }]} id="sermons">
+  <div class="wrap sermons">
+    <div class="copy reveal">
+      <p class="eyebrow">Sermons</p>
+      <h2>Recent sermons.</h2>
+      <p class="lead muted">Watch the latest message, or browse earlier ones from the playlist.</p>
+      <a class="btn ghost" href={site.links.sermons} target="_blank" rel="noopener">All sermons on YouTube ↗</a>
+    </div>
+    <div class="player reveal">
+      <iframe
+        src={embedUrl}
+        title="Recent sermons from South Point Church"
+        loading="lazy"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sermons {
+    display: grid;
+    gap: var(--space-lg);
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  }
+  .copy {
+    display: grid;
+    gap: var(--space-sm);
+    justify-items: start;
+  }
+  .copy .eyebrow {
+    margin-bottom: 0;
+  }
+  .copy .btn {
+    margin-top: var(--space-xs);
+  }
+  /* The video gets roughly twice the room of the text on wide screens */
+  @media (min-width: 60rem) {
+    .sermons {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+    }
+  }
+  .player {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--ink);
+    box-shadow: var(--shadow-lift);
+  }
+  .player iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  @media (max-width: 36rem) {
+    .copy {
+      justify-items: center;
+      text-align: center;
+    }
+  }
+</style>

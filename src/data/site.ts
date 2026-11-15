@@ -28,6 +28,9 @@ export const site = {
     email: 'office@southpointindiana.org',
   },
 
+  /** YouTube channel ID (starts with "UC"). Powers the embedded sermon player. */
+  youtubeChannelId: 'UC29SYQwyV5q4uxfqbcZtqfw',
+
   links: {
     events: 'https://southpointindiana.churchcenter.com/calendar?view=gallery',
     give: 'https://southpointindiana.churchcenter.com/giving',

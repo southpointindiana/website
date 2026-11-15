@@ -1,11 +1,12 @@
 ---
 // HOME PAGE  →  https://www.southpointindiana.org/
 // Sections, top to bottom: Hero · Gatherings · Grow/Serve/Go · Who we are ·
-// Ministries · Visit. Facts (times, address, links) come from src/data/site.ts.
+// Ministries · Sermons · Visit. Facts (times, address, links) come from src/data/site.ts.
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Mission from '../components/Mission.astro';
+import Sermons from '../components/Sermons.astro';
 import logo from '../assets/logo.png';
 import growIcon from '../assets/icons/grow.png';
 import serveIcon from '../assets/icons/serve.png';
@@ -49,7 +50,7 @@ const pillars = [
         </p>
         <div class="btn-row">
           <a class="btn" href="#visit">Plan a visit</a>
-          <a class="btn ghost" href={site.links.sermons} target="_blank" rel="noopener">Watch sermons</a>
+          <a class="btn ghost" href="#sermons">Watch sermons</a>
         </div>
       </div>
       <div class="hero-art" aria-hidden="true">
@@ -146,7 +147,10 @@ const pillars = [
     </div>
   </section>
 
-  <!-- ── Visit / Pray / Sermons ───────────────────────────────────────── -->
+  <!-- ── Recent sermons (embedded YouTube player) ─────────────────────── -->
+  <Sermons />
+
+  <!-- ── Visit / Pray ─────────────────────────────────────────────────── -->
   <section class="section cream" id="visit">
     <div class="wrap visit-grid">
       <div class="visit-main reveal">
@@ -175,13 +179,6 @@ const pillars = [
           <div>
             <h3>How can we pray for you?</h3>
             <p class="muted">Our pastors would be glad to pray for you.</p>
-          </div>
-        </a>
-        <a class="card side reveal" href={site.links.sermons} target="_blank" rel="noopener">
-          <span class="play" aria-hidden="true"></span>
-          <div>
-            <h3>Recent sermons</h3>
-            <p class="muted">Watch and listen on our YouTube channel.</p>
           </div>
         </a>
       </div>
@@ -436,8 +433,7 @@ const pillars = [
     align-items: center;
     gap: var(--space-md);
   }
-  .side img,
-  .play {
+  .side img {
     flex: none;
     width: clamp(4rem, 3.5rem + 2vw, 5.5rem);
     aspect-ratio: 1;
@@ -446,19 +442,5 @@ const pillars = [
   .side h3 {
     font-size: var(--text-lg);
     margin-bottom: 0.25rem;
-  }
-  /* CSS-only "play" badge */
-  .play {
-    display: grid;
-    place-items: center;
-    background: var(--orange);
-  }
-  .play::after {
-    content: '';
-    width: 0;
-    height: 0;
-    margin-left: 8%;
-    border-block: 0.7rem solid transparent;
-    border-left: 1.15rem solid var(--paper);
   }
 </style>

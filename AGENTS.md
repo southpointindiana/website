@@ -45,7 +45,7 @@ src/
     pray.astro              /pray
     404.astro               not-found page
   layouts/Base.astro      ← <head>, header, footer, fonts — wraps every page
-  components/             ← Header, Footer, PageHero, Mission
+  components/             ← Header, Footer, PageHero, Mission, Sermons
   styles/global.css       ← design tokens (colors, type, spacing) + shared classes
   assets/                 ← images processed by Astro (logo, icons, photos)
 public/                   ← files copied as-is (favicon, _redirects, robots.txt)
@@ -119,7 +119,9 @@ tune with `style="--min: 16rem"`), `.stack`, `.heading`, `.eyebrow`, `.btn`
 `.lead`, `.muted`, `.reveal` (fade-up on scroll), `.sr-only`.
 
 Components: `<PageHero title eyebrow>` (inner-page title band),
-`<Mission text>` (highlights the words grow / serve / go).
+`<Mission text>` (highlights the words grow / serve / go),
+`<Sermons tone>` (embedded YouTube player showing the channel's newest uploads;
+used on the home and About pages).
 
 ## Deployment
 
