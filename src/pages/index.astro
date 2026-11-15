@@ -205,6 +205,14 @@ const pillars = [
     gap: var(--space-lg);
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   }
+  /* Keep the text and buttons above the decorative artwork so they stay clickable. */
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+  }
+  .hero-art {
+    pointer-events: none;
+  }
   .hero-copy > * + * {
     margin-top: var(--space-md);
   }
